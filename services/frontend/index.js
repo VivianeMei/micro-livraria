@@ -38,9 +38,7 @@ function newBook(book) {
 function calculateShipping(id, cep) {
     fetch('http://localhost:3000/shipping/' + cep)
         .then((data) => {
-            if (data.ok) {
-                return data.json();
-            }
+            if (data.ok) return data.json();
             throw data.statusText;
         })
         .then((data) => {
@@ -55,74 +53,62 @@ function calculateShipping(id, cep) {
 document.addEventListener('DOMContentLoaded', function () {
     const books = document.querySelector('.books');
 
-    // 🔽 CARREGA OS LIVROS
     fetch('http://localhost:3000/products')
         .then((data) => {
-            if (data.ok) {
-                return data.json();
-            }
+            if (data.ok) return data.json();
             throw data.statusText;
         })
         .then((data) => {
-            if (data) {
-                data.forEach((book) => {
-                    books.appendChild(newBook(book));
-                });
+            data.forEach((book) => {
+                books.appendChild(newBook(book));
+            });
 
-                // 🔽 EVENTO FRETE
-                document.querySelectorAll('.button-shipping').forEach((btn) => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.target.getAttribute('data-id');
-                        const cep = document.querySelector(`.book[data-id="${id}"] input`).value;
-                        calculateShipping(id, cep);
-                    });
+            document.querySelectorAll('.button-shipping').forEach((btn) => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const cep = document.querySelector(`.book[data-id="${id}"] input`).value;
+                    calculateShipping(id, cep);
                 });
+            });
 
-                // 🔽 EVENTO COMPRA
-                document.querySelectorAll('.button-buy').forEach((btn) => {
-                    btn.addEventListener('click', () => {
-                        swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
-                    });
+            document.querySelectorAll('.button-buy').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
                 });
-            }
+            });
         })
         .catch((err) => {
             swal('Erro', 'Erro ao listar os produtos', 'error');
             console.error(err);
         });
 
-    document.getElementById('pesquisar').addEventListener('click', () => {
-    const id = document.getElementById('input-pesquisa').value;
+    const botaoPesquisa = document.getElementById('pesquisar');
 
-    if (!id) {
-        swal('Atenção', 'Digite um código de livro', 'warning');
-        return;
+    if (botaoPesquisa) {
+        botaoPesquisa.addEventListener('click', () => {
+            const input = document.getElementById('input-pesquisa');
+            const id = input.value.trim();
+
+            if (!id) {
+                swal('Atenção', 'Digite um código de livro', 'warning');
+                return;
+            }
+
+            const bookElement = document.querySelector(`.book[data-id="${id}"]`);
+
+            if (bookElement) {
+                const name = bookElement.querySelector('.title').textContent;
+                const author = bookElement.querySelector('.subtitle').textContent;
+                const price = bookElement.querySelector('.is-size-4').textContent;
+
+                swal(
+                    'Livro encontrado 📚',
+                    `${name}\n${author}\n${price}\nStatus: Disponível`,
+                    'success'
+                );
+            } else {
+                swal('Erro', 'Livro não encontrado', 'error');
+            }
+        });
     }
-
-    // Remove destaque anterior
-    document.querySelectorAll('.card').forEach(card => {
-        card.style.border = 'none';
-    });
-
-    const bookElement = document.querySelector(`.book[data-id="${id}"]`);
-
-    if (bookElement) {
-        const card = bookElement.closest('.card');
-
-        // Destaca o livro
-        card.style.border = '3px solid green';
-
-        // Pega infos do livro direto da tela
-        const name = bookElement.querySelector('.title').innerText;
-        const author = bookElement.querySelector('.subtitle').innerText;
-
-        swal(
-            'Livro encontrado 📚',
-            `Nome: ${name}\nAutor: ${author}\nStatus: Disponível`,
-            'success'
-        );
-    } else {
-        swal('Erro', 'Livro não encontrado', 'error');
-    }
-});
 });
