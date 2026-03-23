@@ -38,7 +38,9 @@ function newBook(book) {
 function calculateShipping(id, cep) {
     fetch('http://localhost:3000/shipping/' + cep)
         .then((data) => {
-            if (data.ok) return data.json();
+            if (data.ok) {
+                return data.json();
+            }
             throw data.statusText;
         })
         .then((data) => {
@@ -55,60 +57,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetch('http://localhost:3000/products')
         .then((data) => {
-            if (data.ok) return data.json();
+            if (data.ok) {
+                return data.json();
+            }
             throw data.statusText;
         })
         .then((data) => {
-            data.forEach((book) => {
-                books.appendChild(newBook(book));
-            });
-
-            document.querySelectorAll('.button-shipping').forEach((btn) => {
-                btn.addEventListener('click', (e) => {
-                    const id = e.target.getAttribute('data-id');
-                    const cep = document.querySelector(`.book[data-id="${id}"] input`).value;
-                    calculateShipping(id, cep);
+            if (data) {
+                data.forEach((book) => {
+                    books.appendChild(newBook(book));
                 });
-            });
 
-            document.querySelectorAll('.button-buy').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
+                document.querySelectorAll('.button-shipping').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const cep = document.querySelector(`.book[data-id="${id}"] input`).value;
+                        calculateShipping(id, cep);
+                    });
                 });
-            });
+
+                document.querySelectorAll('.button-buy').forEach((btn) => {
+                    btn.addEventListener('click', (e) => {
+                        swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
+                    });
+                });
+            }
         })
         .catch((err) => {
             swal('Erro', 'Erro ao listar os produtos', 'error');
             console.error(err);
         });
-
-    const botaoPesquisa = document.getElementById('pesquisar');
-
-    if (botaoPesquisa) {
-        botaoPesquisa.addEventListener('click', () => {
-            const input = document.getElementById('input-pesquisa');
-            const id = input.value.trim();
-
-            if (!id) {
-                swal('Atenção', 'Digite um código de livro', 'warning');
-                return;
-            }
-
-            const bookElement = document.querySelector(`.book[data-id="${id}"]`);
-
-            if (bookElement) {
-                const name = bookElement.querySelector('.title').textContent;
-                const author = bookElement.querySelector('.subtitle').textContent;
-                const price = bookElement.querySelector('.is-size-4').textContent;
-
-                swal(
-                    'Livro encontrado 📚',
-                    `${name}\n${author}\n${price}\nStatus: Disponível`,
-                    'success'
-                );
-            } else {
-                swal('Erro', 'Livro não encontrado', 'error');
-            }
-        });
-    }
 });
