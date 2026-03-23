@@ -55,6 +55,7 @@ function calculateShipping(id, cep) {
 document.addEventListener('DOMContentLoaded', function () {
     const books = document.querySelector('.books');
 
+    // 🔽 CARREGA OS LIVROS
     fetch('http://localhost:3000/products')
         .then((data) => {
             if (data.ok) {
@@ -68,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     books.appendChild(newBook(book));
                 });
 
+                // 🔽 EVENTO FRETE
                 document.querySelectorAll('.button-shipping').forEach((btn) => {
                     btn.addEventListener('click', (e) => {
                         const id = e.target.getAttribute('data-id');
@@ -76,8 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 });
 
+                // 🔽 EVENTO COMPRA
                 document.querySelectorAll('.button-buy').forEach((btn) => {
-                    btn.addEventListener('click', (e) => {
+                    btn.addEventListener('click', () => {
                         swal('Compra de livro', 'Sua compra foi realizada com sucesso', 'success');
                     });
                 });
@@ -87,4 +90,37 @@ document.addEventListener('DOMContentLoaded', function () {
             swal('Erro', 'Erro ao listar os produtos', 'error');
             console.error(err);
         });
+
+    // 🔍 PESQUISA DE LIVRO
+    document.getElementById('pesquisar').addEventListener('click', () => {
+        const id = document.getElementById('input-pesquisa').value;
+
+        if (!id) {
+            swal('Atenção', 'Digite um código de livro', 'warning');
+            return;
+        }
+
+        fetch('http://localhost:3000/products')
+            .then((data) => {
+                if (data.ok) return data.json();
+                throw data.statusText;
+            })
+            .then((data) => {
+                const book = data.find((b) => b.id == id);
+
+                if (book) {
+                    swal(
+                        'Livro encontrado 📚',
+                        `Nome: ${book.name}\nAutor: ${book.author}\nPreço: R$${book.price.toFixed(2)}`,
+                        'success'
+                    );
+                } else {
+                    swal('Erro', 'Livro não encontrado', 'error');
+                }
+            })
+            .catch((err) => {
+                swal('Erro', 'Erro ao buscar livro', 'error');
+                console.error(err);
+            });
+    });
 });
