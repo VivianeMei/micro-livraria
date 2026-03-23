@@ -91,36 +91,38 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(err);
         });
 
-    // 🔍 PESQUISA DE LIVRO
     document.getElementById('pesquisar').addEventListener('click', () => {
-        const id = document.getElementById('input-pesquisa').value;
+    const id = document.getElementById('input-pesquisa').value;
 
-        if (!id) {
-            swal('Atenção', 'Digite um código de livro', 'warning');
-            return;
-        }
+    if (!id) {
+        swal('Atenção', 'Digite um código de livro', 'warning');
+        return;
+    }
 
-        fetch('http://localhost:3000/products')
-            .then((data) => {
-                if (data.ok) return data.json();
-                throw data.statusText;
-            })
-            .then((data) => {
-                const book = data.find((b) => b.id == id);
-
-                if (book) {
-                    swal(
-                        'Livro encontrado 📚',
-                        `Nome: ${book.name}\nAutor: ${book.author}\nPreço: R$${book.price.toFixed(2)}`,
-                        'success'
-                    );
-                } else {
-                    swal('Erro', 'Livro não encontrado', 'error');
-                }
-            })
-            .catch((err) => {
-                swal('Erro', 'Erro ao buscar livro', 'error');
-                console.error(err);
-            });
+    // Remove destaque anterior
+    document.querySelectorAll('.card').forEach(card => {
+        card.style.border = 'none';
     });
+
+    const bookElement = document.querySelector(`.book[data-id="${id}"]`);
+
+    if (bookElement) {
+        const card = bookElement.closest('.card');
+
+        // Destaca o livro
+        card.style.border = '3px solid green';
+
+        // Pega infos do livro direto da tela
+        const name = bookElement.querySelector('.title').innerText;
+        const author = bookElement.querySelector('.subtitle').innerText;
+
+        swal(
+            'Livro encontrado 📚',
+            `Nome: ${name}\nAutor: ${author}\nStatus: Disponível`,
+            'success'
+        );
+    } else {
+        swal('Erro', 'Livro não encontrado', 'error');
+    }
+});
 });
