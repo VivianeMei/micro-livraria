@@ -21,13 +21,26 @@
         <div class="box cta">
             <p class="has-text-centered">Uma simples livraria utilizando microservices</p>
 
-            <div style="margin-top:10px; text-align:center;">
-                <input 
-                    id="input-pesquisa" 
-                    type="text" 
-                    placeholder="Digite o código do livro (ex: 1)"
-                />
-                <button id="pesquisar">Pesquisar</button>
+            <div class="field has-addons is-justify-content-center" style="margin-top: 15px;">
+                
+                <div class="control has-icons-left">
+                    <input 
+                        id="input-pesquisa" 
+                        class="input is-medium" 
+                        type="text" 
+                        placeholder="Digite o código do livro (ex: 1)"
+                    />
+                    <span class="icon is-left">
+                        🔍
+                    </span>
+                </div>
+
+                <div class="control">
+                    <button id="pesquisar" class="button is-info is-medium">
+                        Pesquisar
+                    </button>
+                </div>
+
             </div>
         </div>
         <section class="container">
